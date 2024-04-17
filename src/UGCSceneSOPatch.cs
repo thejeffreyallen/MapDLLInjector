@@ -6,15 +6,30 @@ using UnityEngine;
 
 namespace MapDLLInjector
 {
+    /// <summary>
+    /// A Harmony patch for the UGCSceneSO.Load method, which is responsible for dynamically loading
+    /// assemblies based on the scene's bundle path. This class enhances the mod's capability to load
+    /// custom DLLs for specific maps at runtime.
+    /// </summary>
+    /// <remarks>
+    /// This class maintains a dictionary of loaded assemblies to prevent reloading of assemblies
+    /// during the runtime of the application. It uses a Harmony prefix to intercept the loading process
+    /// of UGC scenes and inject custom DLLs where necessary.
+    /// </remarks>
     [HarmonyPatch(typeof(UGCSceneSO), nameof(UGCSceneSO.Load))]
     class UGCSceneSOPatch
     {
         public static Dictionary<string, Assembly> assemblies = new Dictionary<string, Assembly>();
 
+        /// <summary>
+        /// Harmony prefix method that logs the loading attempt and calls the injection method for the DLL.
+        /// </summary>
+        /// <param name="__instance">The instance of UGCSceneSO being loaded.</param>
+        /// <returns>Always returns true to continue with the original method execution.</returns>
         [HarmonyPrefix]
         static bool Prefix(UGCSceneSO __instance)
         {
-            Logger.Log($"Loading DLL for Map at {__instance._bundlePath}");
+            Logger.Log($"Searching for map DLL at {__instance._bundlePath}");
             try
             {
                 InjectDLLForMap(__instance._bundlePath);
@@ -26,6 +41,10 @@ namespace MapDLLInjector
             return true;
         }
 
+        /// <summary>
+        /// Injects a DLL based on the bundle path of the map, loading it if it hasn't been loaded yet.
+        /// </summary>
+        /// <param name="bundlePath">The path to the bundle for which the DLL needs to be injected.</param>
         public static void InjectDLLForMap(string bundlePath)
         {
             var pathArray = bundlePath.Split('\\');
@@ -36,24 +55,27 @@ namespace MapDLLInjector
                 LoadDLL(path);
                 return;
             }
-            Logger.Log($"Assembly {path} is loaded");
+            Logger.Log($"Assembly {path} is already loaded");
         }
 
+        /// <summary>
+        /// Constructs the path for the DLL associated with the map name.
+        /// </summary>
+        /// <param name="mapName">The name of the map for which the DLL path is required.</param>
+        /// <returns>The full path to the DLL.</returns>
         private static string GetDLLPath(string mapName)
         {
-            // Get the path to the current user's Documents folder
             string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-            // Construct the path to where the DLLs are stored
             string dllDirectory = Path.Combine(documentsPath, "BMX Streets", "Maps", mapName);
-            // Combine the directory with the DLL's filename to get the full path
             var retVal = Path.Combine(dllDirectory, $"{mapName}.dll");
-
             Logger.Log($"DLL path to check: {retVal}");
-
             return retVal;
         }
 
+        /// <summary>
+        /// Loads the DLL from the specified path and registers all suitable types within it.
+        /// </summary>
+        /// <param name="path">The path from which the DLL is loaded.</param>
         private static void LoadDLL(string path)
         {
             if (!File.Exists(path))
@@ -64,12 +86,10 @@ namespace MapDLLInjector
             }
             try
             {
-                // Load the DLL
                 Logger.Log($"Loading DLL: {path}");
                 Assembly loadedAssembly = Assembly.LoadFrom(path);
                 RegisterAllInAssembly(loadedAssembly);
                 Logger.Log($"DLL loaded successfully: {loadedAssembly.FullName}");
-
                 assemblies.Add(path, loadedAssembly);
             }
             catch (Exception e)
@@ -78,6 +98,10 @@ namespace MapDLLInjector
             }
         }
 
+        /// <summary>
+        /// Registers all MonoBehaviour-derived types in the loaded assembly within the IL2CPP domain.
+        /// </summary>
+        /// <param name="assembly">The assembly containing the types to register.</param>
         private static void RegisterAllInAssembly(Assembly assembly)
         {
             Logger.Log($"Attempting to register all types in: {assembly.FullName}");
@@ -95,6 +119,10 @@ namespace MapDLLInjector
             });
         }
 
+        /// <summary>
+        /// Registers a single MonoBehaviour type in the IL2CPP domain if not already registered.
+        /// </summary>
+        /// <param name="customType">The type to register.</param>
         public static void RegisterMonoBehaviourInIl2Cpp(Type customType)
         {
             Logger.Log($"Registering type: [{customType?.FullName}]");
@@ -116,7 +144,7 @@ namespace MapDLLInjector
                 Logger.Log("Type already registered: " + customType.FullName);
             }
         }
-
     }
+
 }
 
