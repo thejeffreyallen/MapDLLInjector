@@ -11,7 +11,7 @@ Welcome to the BMX Streets™ Map DLL Injector Mod, a [MelonLoader](https://melo
 ## Installation
 
 1. **Download the Mod**:
-   - Download the latest release from the GitHub repository.
+   - Download the [latest release](https://github.com/thejeffreyallen/MapDLLInjector/releases) from the GitHub repository.
 2. **Install MelonLoader**:
    - [Download MelonLoader](https://github.com/HerpDerpinstine/MelonLoader/releases/latest/download/MelonLoader.Installer.exe) and ensure that it is installed in your BMX Streets game directory. MelonLoader is necessary for loading mods in BMX Streets™.
 3. **Place the Mod Files**:
