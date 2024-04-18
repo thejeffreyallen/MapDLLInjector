@@ -41,6 +41,7 @@ Once installed, the mod operates automatically:
 
 #### (optional)
 - [Map Mod Template Visual Studio Project](https://www.mediafire.com/file_premium/c24q5aq1y4u7bs1/BMXStreetsMonoModTemplate.zip/file)
+- [Unity Explorer](https://thunderstore.io/package/download/sinai-dev/UnityExplorer_IL2CPP_ML/4.8.2/) mod for MelonLoader (This will allow you to inspect your scene in game. Makes debugging a lot easier)
 
 ### Visual Studio Section
 
@@ -131,6 +132,10 @@ namespace BMXStreetsMonoModTemplate
 Example (the jpg is optional):
 
 ![alt text](Images/mapExample.png)
+
+**5. Test your map**
+
+Open the game and load your custom map. You can use the [Unity Explorer](https://thunderstore.io/package/download/sinai-dev/UnityExplorer_IL2CPP_ML/4.8.2/) mod to check and verify that your objects have been attached automatically to your script and vice versa.
 
 ## Helpful Resources
 
