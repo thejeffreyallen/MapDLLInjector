@@ -49,7 +49,7 @@ namespace MapDLLInjector
         {
             var pathArray = bundlePath.Split('\\');
             var mapName = pathArray[pathArray.Length - 1];
-            var path = GetDLLPath(mapName);
+            var path = GetDLLPath(mapName.Split('.')[0]); // Remove .bundle from the name if it exists
             if (!assemblies.ContainsKey(path))
             {
                 LoadDLL(path);
