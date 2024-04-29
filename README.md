@@ -90,6 +90,17 @@ public class MyCustomScript : MonoBehaviour
     private Camera cam;
     private float floatVal;
 
+    // Class Constructor needed for IL2CPP
+    public MyCustomScript(IntPtr handle) : base(handle)
+    {
+       if(handle == IntPtr.Zero)
+       {
+          // If we see this, we know something went wrong
+          Debug.Log("Warning: Handle is zero for MyCustomScript");
+       }
+       ClassInjector.DerivedConstructorBody(this);
+    }
+
     public void Start()
     {
         Debug.Log("MyCustomScript started.");
